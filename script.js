@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('store_image', storeInput.files[0]);
 
         // Production Render URL Placeholder
-        const apiUrl = 'https://ai-visual-merchandising.onrender.com';
+        const apiUrl = 'https://ai-visual-merchandising.onrender.com/api/audit-display';
 
         try {
             const response = await fetch(apiUrl, {
@@ -87,8 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error || `HTTP error! status: ${response.status}`);
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const err = await response.json();
+                    throw new Error(err.error || `HTTP error! status: ${response.status}`);
+                } else {
+                    // Safely handle HTML error pages without crashing the JSON parser
+                    throw new Error(`Server returned an unexpected non-JSON response (Status: ${response.status}). Please check your Render logs.`);
+                }
             }
             const data = await response.json();
             
