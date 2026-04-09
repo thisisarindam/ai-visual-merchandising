@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CITISTYLE Visual Merchandising Auditor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">CITISTYLE</div>
+        <h1>Visual Merchandising Auditor</h1>
+    </header>
+    
+    <main class="dashboard-container">
+        <section class="upload-section">
+            <div class="card">
+                <h2>Head Office Guideline</h2>
+                <input type="file" id="ho-image" accept="image/*">
+                <div id="ho-preview" class="image-preview"></div>
+            </div>
+            <div class="card">
+                <h2>Store Execution Photo</h2>
+                <input type="file" id="store-image" accept="image/*">
+                <div id="store-preview" class="image-preview"></div>
+            </div>
+        </section>
+        
+        <section class="action-section">
+            <button id="run-audit-btn">Run AI Visual Audit</button>
+        </section>
+        
+        <section class="results-section">
+            <h2>Audit Report</h2>
+            <textarea id="result-box" readonly placeholder="The AI auditor's report will appear here..."></textarea>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
