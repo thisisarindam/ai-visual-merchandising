@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const storePreview = document.getElementById('store-preview');
     const runAuditBtn = document.getElementById('run-audit-btn');
     const resultBox = document.getElementById('result-box');
+    const themeToggleBtn = document.getElementById('theme-toggle');
 
     // Feature 1: Image Previews
     function attachPreviewListener(inputElement, previewContainer) {
@@ -21,6 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     attachPreviewListener(storeInput, storePreview);
+
+    // Feature: Theme Toggle Logic
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeToggleBtn.textContent = '☀️ Light Mode';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        themeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
 
     // Feature 2: API Call
     runAuditBtn.addEventListener('click', async () => {
