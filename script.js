@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set Loading State
         runAuditBtn.disabled = true;
-        runAuditBtn.textContent = 'Analyzing...';
+        runAuditBtn.classList.add('btn-loading');
         resultBox.innerHTML = '<div class="animate-block">Connecting to AI model. This may take a few seconds...</div>';
 
         const formData = new FormData();
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             // Re-enable interface
             runAuditBtn.disabled = false;
-            runAuditBtn.textContent = 'Run AI Visual Audit';
+            runAuditBtn.classList.remove('btn-loading');
         }
     });
 });
