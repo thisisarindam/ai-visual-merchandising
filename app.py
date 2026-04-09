@@ -35,7 +35,7 @@ def audit_display():
                 return jsonify({"error": f"Predefined head office image '{path}' not found on server."}), 500
             ho_images.append(Image.open(path))
 
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        model = genai.GenerativeModel("gemini-3.1-flash")
         
         prompt = """
         You are a STRICT VISUAL MERCHANDISER whose sole responsibility is to showcase each fashion item to the customer properly and neatly.
