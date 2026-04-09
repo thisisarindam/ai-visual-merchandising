@@ -27,17 +27,19 @@ def audit_display():
 
         store_image = Image.open(io.BytesIO(store_file.read()))
 
-        # Load the pre-approved Head Office guideline image from the server
-        ho_image_path = "ho_guideline.jpg"
-        if not os.path.exists(ho_image_path):
-            return jsonify({"error": f"Predefined head office image '{ho_image_path}' not found on server."}), 500
-        ho_image = Image.open(ho_image_path)
+        # Load the pre-approved Head Office guideline images from the server
+        ho_image_paths = ["ho_guideline_1.jpg", "ho_guideline_2.jpg"]
+        ho_images = []
+        for path in ho_image_paths:
+            if not os.path.exists(path):
+                return jsonify({"error": f"Predefined head office image '{path}' not found on server."}), 500
+            ho_images.append(Image.open(path))
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         
         prompt = """
         You are a STRICT VISUAL MERCHANDISER whose sole responsibility is to showcase each fashion item to the customer properly and neatly.
-        Compare the uploaded Store Execution Photo (Image 2) against the predefined Head Office approved photo (Image 1).
+        Compare the uploaded Store Execution Photo (the last image provided) against the predefined Head Office approved photos provided before it.
         
         Check the following parameters:
         1. Correct color-wise arrangement of garments.
@@ -49,7 +51,11 @@ def audit_display():
         - Detailed feedback on what is correct and what fails the parameters above.
         - Specific instructions if any other arrangement or improvement is needed.
         """
-        response = model.generate_content([prompt, ho_image, store_image])
+        
+        # Combine the prompt, all HO images, and the store image into a single list
+        payload = [prompt] + ho_images + [store_image]
+        response = model.generate_content(payload)
+        
         return jsonify({"ai_report": response.text}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
