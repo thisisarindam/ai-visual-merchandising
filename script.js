@@ -37,6 +37,30 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     });
 
+    // Feature 3: Rich Text Formatter for AI Report
+    function formatAIReport(text) {
+        // Parse bold markdown
+        let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Make the Score stand out visually
+        html = html.replace(/(Score[:\-]?\s*)(\d+)/gi, '$1<span class="highlight-score">$2</span>');
+
+        // Split text by double line breaks to treat them as distinct blocks
+        let blocks = html.split(/\n\n+/);
+        
+        return blocks.map((block, index) => {
+            let delay = index * 0.15; // Staggered animation effect
+            
+            if (/(^|\n)[*-] /.test(block)) {
+                let listItems = block.trim().split('\n').map(line => `<li>${line.replace(/^[*-]\s+/, '').trim()}</li>`).join('');
+                return `<ul class="animate-block" style="animation-delay: ${delay}s">${listItems}</ul>`;
+            }
+            
+            // Wrap regular text blocks
+            return `<div class="animate-block block-paragraph" style="animation-delay: ${delay}s">${block.replace(/\n/g, '<br>')}</div>`;
+        }).join('');
+    }
+
     // Feature 2: API Call
     runAuditBtn.addEventListener('click', async () => {
         // Validation
@@ -48,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set Loading State
         runAuditBtn.disabled = true;
         runAuditBtn.textContent = 'Analyzing...';
-        resultBox.value = 'Connecting to AI model. This may take a few seconds...';
+        resultBox.innerHTML = '<div class="animate-block">Connecting to AI model. This may take a few seconds...</div>';
 
         const formData = new FormData();
         formData.append('store_image', storeInput.files[0]);
@@ -67,9 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(err.error || `HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            resultBox.value = data.ai_report || 'No content generated.';
+            
+            // Format and display the rich animated content
+            resultBox.innerHTML = data.ai_report ? formatAIReport(data.ai_report) : '<div class="animate-block">No content generated.</div>';
+            
         } catch (error) {
-            resultBox.value = `Error running audit: ${error.message}\n\nPlease verify that your Render backend is deployed correctly and active.`;
+            resultBox.innerHTML = `<div class="animate-block" style="color: #e53e3e;"><strong>Error running audit:</strong> ${error.message}<br><br>Please verify that your Render backend is deployed correctly and active.</div>`;
         } finally {
             // Re-enable interface
             runAuditBtn.disabled = false;
