@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('store_image', storeInput.files[0]);
 
         // Production Render URL Placeholder
-        const apiUrl = 'https://YOUR-RENDER-APP-NAME.onrender.com/api/audit-display';
+        const apiUrl = 'https://ai-visual-merchandising.onrender.com';
 
         try {
             const response = await fetch(apiUrl, {
