@@ -17,27 +17,37 @@ if api_key:
 @app.route('/api/audit-display', methods=['POST'])
 def audit_display():
     try:
-        if 'ho_image' not in request.files or 'store_image' not in request.files:
-            return jsonify({"error": "Both 'ho_image' and 'store_image' are required."}), 400
+        if 'store_image' not in request.files:
+            return jsonify({"error": "'store_image' is required."}), 400
         
-        ho_file = request.files['ho_image']
         store_file = request.files['store_image']
         
-        if ho_file.filename == '' or store_file.filename == '':
-            return jsonify({"error": "Missing selected file(s)."}), 400
+        if store_file.filename == '':
+            return jsonify({"error": "Missing selected file."}), 400
 
-        ho_image = Image.open(io.BytesIO(ho_file.read()))
         store_image = Image.open(io.BytesIO(store_file.read()))
+
+        # Load the pre-approved Head Office guideline image from the server
+        ho_image_path = "ho_guideline.jpg"
+        if not os.path.exists(ho_image_path):
+            return jsonify({"error": f"Predefined head office image '{ho_image_path}' not found on server."}), 500
+        ho_image = Image.open(ho_image_path)
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         
         prompt = """
-        You are a strict Visual Merchandising Auditor for CITISTYLE.
-        Please compare Image 2 (store execution) against Image 1 (Head Office guideline).
-        Based on your strict evaluation, provide a report containing exactly the following details:
-        - Match Score (as a percentage)
-        - Status (e.g., Pass, Needs Improvement, Fail)
-        - A bulleted list of Errors (noting missing items, wrong placements, lighting issues, etc.)
+        You are a STRICT VISUAL MERCHANDISER whose sole responsibility is to showcase each fashion item to the customer properly and neatly.
+        Compare the uploaded Store Execution Photo (Image 2) against the predefined Head Office approved photo (Image 1).
+        
+        Check the following parameters:
+        1. Correct color-wise arrangement of garments.
+        2. Overall clothing/garments arrangement.
+        3. Whether garments or fashion items are showcased properly and neatly.
+        
+        Based on your strict evaluation, provide a report containing:
+        - A Score from 1 to 100 (the higher the score, the better the arrangement).
+        - Detailed feedback on what is correct and what fails the parameters above.
+        - Specific instructions if any other arrangement or improvement is needed.
         """
         response = model.generate_content([prompt, ho_image, store_image])
         return jsonify({"ai_report": response.text}), 200

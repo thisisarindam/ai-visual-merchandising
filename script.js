@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const hoInput = document.getElementById('ho-image');
     const storeInput = document.getElementById('store-image');
-    const hoPreview = document.getElementById('ho-preview');
     const storePreview = document.getElementById('store-preview');
     const runAuditBtn = document.getElementById('run-audit-btn');
     const resultBox = document.getElementById('result-box');
@@ -22,14 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    attachPreviewListener(hoInput, hoPreview);
     attachPreviewListener(storeInput, storePreview);
 
     // Feature 2: API Call
     runAuditBtn.addEventListener('click', async () => {
         // Validation
-        if (hoInput.files.length === 0 || storeInput.files.length === 0) {
-            alert('Please select both the Head Office Guideline and Store Execution Photo.');
+        if (storeInput.files.length === 0) {
+            alert('Please select the Store Execution Photo.');
             return;
         }
 
@@ -39,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resultBox.value = 'Connecting to AI model. This may take a few seconds...';
 
         const formData = new FormData();
-        formData.append('ho_image', hoInput.files[0]);
         formData.append('store_image', storeInput.files[0]);
 
         // Production Render URL Placeholder
